@@ -8,7 +8,7 @@ export class HostWSService {
   state = this._state;
 
   connect(sessionId: string) {
-    this.socket = new WebSocket(`ws://localhost:8000/ws/host/${sessionId}`);
+    this.socket = new WebSocket(`wss://pole-be.onrender.com/ws/host/${sessionId}`);
 
     this.socket.onopen = () => {
       console.log("WS HOST connected");

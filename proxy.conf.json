@@ -1,11 +1,11 @@
 {
   "/session": {
-    "target": "http://127.0.0.1:8000",
+    "target": "https://pole-be.onrender.com",
     "secure": false,
     "changeOrigin": true
   },
   "/topics": {
-    "target": "http://127.0.0.1:8000",
+    "target": "https://pole-be.onrender.com",
     "secure": false,
     "changeOrigin": true
   }
