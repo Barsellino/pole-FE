@@ -10,9 +10,13 @@ export interface Topic {
 
 @Injectable({ providedIn: 'root' })
 export class TopicsService {
+
+  private readonly baseUrl = 'https://pole-be.onrender.com';
+
   constructor(private http: HttpClient) {}
 
   getTopics(): Observable<Topic[]> {
-    return this.http.get<Topic[]>('/topics/');
+    // GET https://pole-be.onrender.com/topics/
+    return this.http.get<Topic[]>(`${this.baseUrl}/topics/`);
   }
 }

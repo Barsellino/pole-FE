@@ -6,7 +6,7 @@ export class DisplayWSService {
   socket!: WebSocket;
 
   connect(sessionId: string) {
-    this.socket = new WebSocket(`ws://localhost:8000/ws/display/${sessionId}`);
+    this.socket = new WebSocket(`wss://pole-be.onrender.com/ws/display/${sessionId}`);
 
     this.socket.onmessage = (event) => {
       const msg = JSON.parse(event.data);

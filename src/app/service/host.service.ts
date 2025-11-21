@@ -5,15 +5,19 @@ import { catchError, of } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class HostService {
 
+  private readonly baseUrl = 'https://pole-be.onrender.com';
+
   constructor(private http: HttpClient) {}
 
   loadSession(id: string) {
-    return this.http.get(`/session/${id}`).pipe(
+    // GET https://pole-be.onrender.com/session/{id}
+    return this.http.get(`${this.baseUrl}/session/${id}`).pipe(
       catchError(() => of(null))
     );
   }
 
   createSession() {
-    return this.http.post<{ session_id: string }>(`/session`, {});
+    // POST https://pole-be.onrender.com/session
+    return this.http.post<{ session_id: string }>(`${this.baseUrl}/session`, {});
   }
 }
