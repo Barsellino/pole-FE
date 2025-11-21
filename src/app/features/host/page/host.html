@@ -1,59 +1,179 @@
-<div>
-  <h2>Session: {{ sessionId }}</h2>
+<div class="host-screen">
 
-  <h3>Оберіть тему:</h3>
+  <!-- ======= HEADER / SESSION ======= -->
+  <header class="host-header">
+    <div class="host-header__left">
+      <h1 class="host-title">Екран ведучого</h1>
+      <p class="host-session">
+        Сесія:
+        <span class="host-session__id">{{ sessionId || '---' }}</span>
+      </p>
+    </div>
 
-  @if(topics().length) {
-    <div style="display: flex; gap: 10px; flex-wrap: wrap">
-      @for(topic of topics(); track topic.id) {
-        <button
-          (click)="chooseTopic(topic)"
-          style="padding: 10px; border: 1px solid #ccc"
-        >
-          {{ topic.name }}
-        </button>
+    <div class="host-header__right">
+      @if (gameState(); as s) {
+        <div class="host-status" [class.host-status--running]="s?.running">
+          <span>Хід: <b>{{ s?.activePlayer || '—' }}</b></span>
+          <span class="dot" [class.blink]="s?.running"></span>
+        </div>
+      } @else {
+        <div class="host-status host-status--muted">
+          Очікуємо стан гри...
+        </div>
       }
     </div>
-  } @else {
-    <p>Завантаження тем...</p>
-  }
+  </header>
 
+  <!-- ======= TOPIC SELECTOR ======= -->
+  <section class="host-topics">
+    <h2 class="section-title">Тема</h2>
 
-  @if (gameState(); as s) {
+    @if (topics().length) {
+      <div class="topics-list">
+        @for (topic of topics(); track topic.id) {
+          <button
+            type="button"
+            class="topic-chip"
+            [class.topic-chip--active]="selectedTopic()?.id === topic.id"
+            (click)="chooseTopic(topic)"
+          >
+            {{ topic.name }}
+          </button>
+        }
+      </div>
+    } @else {
+      <p class="muted">Завантаження тем...</p>
+    }
+  </section>
 
-    <h3>Гравець: {{ s?.activePlayer }}</h3>
+  <!-- ======= MAIN LAYOUT ======= -->
+  <main class="host-layout">
 
-    <p>Таймер A: {{ s?.timeA }} сек</p>
-    <p>Таймер B: {{ s?.timeB }} сек</p>
+    <!-- === LEFT: IMAGE STAGE === -->
+    <section class="host-main">
+      <h2 class="section-title">Картинка</h2>
 
-    <p>Запущено: {{ s?.running ? 'Так' : 'Ні' }}</p>
+      @if (gameState(); as s) {
 
-    <p>
-      Картинка:
-      {{ (s?.imageIndex ?? 0) + 1 }}/{{ s?.images?.length ?? 0 }}
-    </p>
+        <div class="stage" [class.placeholder]="!s?.images?.length">
+          @if (s?.images?.length) {
+            <img
+              [src]="s?.images?.[s.imageIndex]?.src"
+              [alt]="s?.images?.[s.imageIndex]?.alt"
+            />
+          } @else {
+            <!-- плейсхолдер текст генерується через CSS -->
+          }
+        </div>
 
+        <div class="image-meta">
+          <div class="image-meta__row">
+            <span>Зображення:</span>
+            <b>
+              {{ (s?.imageIndex ?? 0) + 1 }}/{{ s?.images?.length ?? 0 }}
+            </b>
+          </div>
 
-  } @else {
-    <p>Очікуємо стан гри...</p>
-  }
+          <div class="image-meta__row image-meta__row--alt">
+            <span>Alt:</span>
+            <span class="image-alt">
+              {{ s?.images?.[s.imageIndex]?.alt || '— (alt не задано)' }}
+            </span>
+          </div>
+        </div>
+
+      } @else {
+        <div class="stage placeholder"></div>
+        <p class="muted">Очікуємо стан гри...</p>
+      }
+
+    </section>
+
+    <!-- === RIGHT: CONTROLS + TIMERS === -->
+    <aside class="host-sidebar">
+
+      <!-- TIMERS -->
+      <section class="host-timers">
+        <h2 class="section-title">Таймери</h2>
+
+        @if (gameState(); as s) {
+          <div class="players">
+
+            <div class="player" [class.active]="s?.activePlayer === 'A'">
+              <span class="label">A</span>
+              <span class="time">{{ s?.timeA }}s</span>
+            </div>
+
+            <div class="status" [class.ended]="s?.timeA === 0 || s?.timeB === 0">
+
+              @if (s?.timeA === 0 || s?.timeB === 0) {
+                <span class="result">
+                  Переможець:
+                  <b>
+                    {{
+                      s?.timeA === 0 && s?.timeB > 0
+                        ? 'B'
+                        : s?.timeB === 0 && s?.timeA > 0
+                          ? 'A'
+                          : 'Нічия'
+                    }}
+                  </b>
+                </span>
+              } @else {
+                <span>Хід: {{ s?.activePlayer || '—' }}</span>
+                <span class="dot" [class.blink]="s?.running"></span>
+              }
+
+            </div>
+
+            <div class="player" [class.active]="s?.activePlayer === 'B'">
+              <span class="label">B</span>
+              <span class="time">{{ s?.timeB }}s</span>
+            </div>
+
+          </div>
+        } @else {
+          <p class="muted">Таймери будуть доступні після старту гри.</p>
+        }
+
+      </section>
+
+      <!-- CONTROLS -->
+      <section class="host-controls">
+        <h2 class="section-title">Керування</h2>
+
+        <div class="controls-grid">
+          <button type="button" class="btn btn--primary" (click)="start('A')">
+            ▶ Старт A
+          </button>
+
+          <button type="button" class="btn btn--primary" (click)="start('B')">
+            ▶ Старт B
+          </button>
+
+          <button type="button" class="btn btn--success" (click)="correct()">
+            ✓ Correct
+          </button>
+
+          <button type="button" class="btn btn--danger" (click)="wrong()">
+            ✗ Wrong (-3 сек)
+          </button>
+
+          <button type="button" class="btn btn--secondary" (click)="pause()">
+            ⏸ Пауза
+          </button>
+          <button
+            type="button"
+            class="btn btn--ghost full-width"
+            (click)="resetTimers()"
+          >
+            🔄 Скинути час
+          </button>
+        </div>
+      </section>
+
+    </aside>
+
+  </main>
+
 </div>
-<hr>
-
-<button (click)="start('A')">▶ Старт A</button>
-<button (click)="start('B')">▶ Старт B</button>
-<button (click)="pause()">⏸ Пауза</button>
-
-<button (click)="correct()">✓ Correct</button>
-<button (click)="wrong()">✗ Wrong (-3 сек)</button>
-
-<button (click)="nextImage()">⏭ Наступна картинка</button>
-<button (click)="resetTimers()">🔄 Скинути час</button>
-
-<h2>Гравець: {{ gameState()?.activePlayer }} {{gameState()?.images?.[gameState().imageIndex]?.alt}}</h2>
-
-<img
-  [src]="gameState()?.images?.[gameState().imageIndex]?.src"
-  [alt]="gameState()?.images?.[gameState().imageIndex]?.alt"
-  style="width: 100%; max-width: 500px;"
->

@@ -3,12 +3,14 @@ import { HostService } from '../../../service/host.service';
 import { CookieService } from '../../../service/cookie.service';
 import { HostWSService } from '../../../service/host-ws.service';
 import { TopicsService, Topic } from '../../../service/topics.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-host',
   standalone: true,
-  imports: [],
-  templateUrl: './host.html'
+  imports: [CommonModule],
+  templateUrl: './host.html',
+  styleUrls: ['./host.css']
 })
 export class Host implements OnInit {
 

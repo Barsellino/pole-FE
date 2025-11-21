@@ -17,12 +17,26 @@ export class Display {
   error = signal('');
   connected = signal(false);
 
-  gameState = computed(() => this.ws.state());
+  // локальний початковий стейт із REST
+  initialState = signal<any | null>(null);
+
+  // основний gameState: спочатку initialState, потім ws.state()
+  gameState = computed(() => {
+    return this.initialState() ?? this.ws.state();
+  });
 
   constructor(
     private rest: DisplayService,
     private ws: DisplayWSService
   ) {
+
+    // коли приходить стейт з ws – перезаписуємо initialState
+    effect(() => {
+      const wsState = this.ws.state();
+      if (wsState) {
+        this.initialState.set(null);
+      }
+    });
 
     // 🔥 Автоматичне фонове завантаження всіх картинок теми
     effect(() => {
@@ -39,6 +53,13 @@ export class Display {
       if (!res?.id) {
         this.error.set('Сесію не знайдено');
         return;
+      }
+
+      console.log(res?.state);
+
+      // кладемо стейт із REST одразу в gameState
+      if (res.state) {
+        this.initialState.set(res.state);
       }
 
       this.error.set('');
