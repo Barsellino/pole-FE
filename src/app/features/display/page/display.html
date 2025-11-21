@@ -1,0 +1,85 @@
+<!-- Якщо не підключено — показуємо форму -->
+@if (!connected()) {
+
+  <div class="connect-screen">
+    <h2>Введіть код сесії</h2>
+
+    <input
+      type="text"
+      [(ngModel)]="code"
+      maxlength="6"
+      placeholder="AAAAAA"
+    />
+
+    <button (click)="connect()">Підключитись</button>
+
+    <div class="error" *ngIf="error()">
+      {{ error() }}
+    </div>
+  </div>
+
+} @else {
+
+  <!-- ======= DISPLAY GAME UI ======= -->
+
+  <div class="display">
+
+    <!-- Тема -->
+    <div class="topic" *ngIf="topic(); else noTopic">
+      <h1 class="topic__title">{{ topic().name }}</h1>
+    </div>
+    <ng-template #noTopic>
+      <h1 class="topic__title muted">Оберіть тему на екрані ведучого</h1>
+    </ng-template>
+
+    <!-- Картинка -->
+    <div class="stage" [class.placeholder]="!currentImageSrc()">
+      <img
+        *ngIf="currentImageSrc() as img"
+        [src]="img"
+        [alt]="currentImageAlt()"
+      />
+    </div>
+
+    <!-- HUD -->
+    <div class="hud">
+      <div class="players">
+
+        <div class="player" [class.active]="activePlayer() === 'A'">
+          <span class="label">A</span>
+          <span class="time">{{ timeA() }}s</span>
+        </div>
+
+        <div class="status" [class.ended]="timeA() === 0 || timeB() === 0">
+
+          @if (timeA() === 0 || timeB() === 0) {
+            <span class="result">
+            Переможець:
+            <b>
+              {{
+                timeA() === 0 && timeB() > 0
+                  ? 'B'
+                  : timeB() === 0 && timeA() > 0
+                    ? 'A'
+                    : 'Нічия'
+              }}
+            </b>
+          </span>
+          } @else {
+            <span>Хід: {{ activePlayer() }}</span>
+            <span class="dot" [class.blink]="running()"></span>
+          }
+
+        </div>
+
+        <div class="player" [class.active]="activePlayer() === 'B'">
+          <span class="label">B</span>
+          <span class="time">{{ timeB() }}s</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+}

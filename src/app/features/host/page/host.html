@@ -1,0 +1,59 @@
+<div>
+  <h2>Session: {{ sessionId }}</h2>
+
+  <h3>Оберіть тему:</h3>
+
+  @if(topics().length) {
+    <div style="display: flex; gap: 10px; flex-wrap: wrap">
+      @for(topic of topics(); track topic.id) {
+        <button
+          (click)="chooseTopic(topic)"
+          style="padding: 10px; border: 1px solid #ccc"
+        >
+          {{ topic.name }}
+        </button>
+      }
+    </div>
+  } @else {
+    <p>Завантаження тем...</p>
+  }
+
+
+  @if (gameState(); as s) {
+
+    <h3>Гравець: {{ s?.activePlayer }}</h3>
+
+    <p>Таймер A: {{ s?.timeA }} сек</p>
+    <p>Таймер B: {{ s?.timeB }} сек</p>
+
+    <p>Запущено: {{ s?.running ? 'Так' : 'Ні' }}</p>
+
+    <p>
+      Картинка:
+      {{ (s?.imageIndex ?? 0) + 1 }}/{{ s?.images?.length ?? 0 }}
+    </p>
+
+
+  } @else {
+    <p>Очікуємо стан гри...</p>
+  }
+</div>
+<hr>
+
+<button (click)="start('A')">▶ Старт A</button>
+<button (click)="start('B')">▶ Старт B</button>
+<button (click)="pause()">⏸ Пауза</button>
+
+<button (click)="correct()">✓ Correct</button>
+<button (click)="wrong()">✗ Wrong (-3 сек)</button>
+
+<button (click)="nextImage()">⏭ Наступна картинка</button>
+<button (click)="resetTimers()">🔄 Скинути час</button>
+
+<h2>Гравець: {{ gameState()?.activePlayer }} {{gameState()?.images?.[gameState().imageIndex]?.alt}}</h2>
+
+<img
+  [src]="gameState()?.images?.[gameState().imageIndex]?.src"
+  [alt]="gameState()?.images?.[gameState().imageIndex]?.alt"
+  style="width: 100%; max-width: 500px;"
+>
