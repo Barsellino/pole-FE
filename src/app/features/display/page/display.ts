@@ -1,7 +1,7 @@
 import { Component, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DisplayService } from '../../../service/display.service';
-import { DisplayWSService } from '../../../service/display-ws.service';
+import { DisplayService } from '../../../core/services/display.service';
+import { DisplayWSService } from '../services/display-ws.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({

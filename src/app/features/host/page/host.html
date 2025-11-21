@@ -111,9 +111,9 @@
                   Переможець:
                   <b>
                     {{
-                      s?.timeA === 0 && s?.timeB > 0
+                      s?.timeA === 0 && (s?.timeB ?? 0) > 0
                         ? 'B'
-                        : s?.timeB === 0 && s?.timeA > 0
+                        : s?.timeB === 0 && (s?.timeA ?? 0) > 0
                           ? 'A'
                           : 'Нічия'
                     }}
